@@ -8,33 +8,35 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 # Ensure the 'uploads' directory exists to save the uploaded files
-os.makedirs('uploads', exist_ok=True)
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Define a relative path to the 'coordinate2.json' file
+# Define the path to the 'coordinate2.json' file relative to the current file
 data_file_path = os.path.join(os.path.dirname(__file__), 'Data', 'coordinate2.json')
 
 # Load the GeoJSON file containing the micromarkets
-with open(data_file_path) as f:
-    micromarket_data = json.load(f)
+try:
+    with open(data_file_path, encoding='utf-8') as f:
+        micromarket_data = json.load(f)
+except FileNotFoundError:
+    print(f"Error: GeoJSON file not found at {data_file_path}")
+    micromarket_data = {"features": []}
 
 # Function to check if a point is within any micromarket polygon
 def get_micromarket(lat, lon):
     point = Point(lon, lat)  # Create a point with longitude and latitude
     for feature in micromarket_data['features']:
-        micromarket_name = feature['properties']['Micromarket']
+        micromarket_name = feature['properties'].get('Micromarket', 'Unknown')
         polygon_coords = feature['geometry']['coordinates']
 
-        # Check for nested structure
         try:
             if feature['geometry']['type'] == "Polygon":
-                # For a single polygon, iterate over each ring (outer and inner)
                 for ring in polygon_coords:
                     if isinstance(ring[0], list):  # Ensure it's a list of coordinates
                         polygon = Polygon(ring)
                         if polygon.contains(point):
                             return micromarket_name
             elif feature['geometry']['type'] == "MultiPolygon":
-                # For multipolygons, iterate over each polygon
                 for poly in polygon_coords:
                     for ring in poly:  # Each ring in the polygon
                         if isinstance(ring[0], list):  # Ensure it's a list of coordinates
@@ -53,6 +55,7 @@ def get_micromarket(lat, lon):
 def home():
     return render_template('index.html')
 
+
 # Route to handle manual lat/long input and return micromarket
 @app.route('/find_micromarket', methods=['POST'])
 def find_micromarket():
@@ -68,6 +71,7 @@ def find_micromarket():
     except ValueError:
         return jsonify({"error": "Invalid input. Please enter valid latitude and longitude."}), 400
 
+
 # Route to handle CSV file upload
 @app.route('/upload_csv', methods=['POST'])
 def upload_csv():
@@ -80,12 +84,12 @@ def upload_csv():
 
     try:
         filename = secure_filename(file.filename)
-        file_path = os.path.join('uploads', filename)
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(file_path)
 
         # Read the CSV and process the file
         updated_rows = []
-        with open(file_path, mode='r') as csv_file:
+        with open(file_path, mode='r', encoding='utf-8') as csv_file:
             csv_reader = csv.reader(csv_file)
             header = next(csv_reader)
             if len(header) < 3:
@@ -96,20 +100,19 @@ def upload_csv():
                 if len(row) < 3:
                     updated_rows.append(row + ["Invalid Row"])
                     continue
-                project_name = row[0]
                 try:
-                    lat = float(row[1])  # Ensure that lat and lon are converted to float
-                    lon = float(row[2])  # Ensure that lat and lon are converted to float
+                    lat = float(row[1])  # Ensure lat and lon are converted to float
+                    lon = float(row[2])
                     micromarket_name = get_micromarket(lat, lon)
                 except ValueError:
-                    micromarket_name = "Invalid Coordinates"  # Handle invalid coordinates
+                    micromarket_name = "Invalid Coordinates"
                 updated_rows.append(row + [micromarket_name])
 
         # Create a new CSV file with the updated data
         updated_filename = f"updated_{filename}"
-        updated_file_path = os.path.join('uploads', updated_filename)
+        updated_file_path = os.path.join(UPLOAD_FOLDER, updated_filename)
 
-        with open(updated_file_path, mode='w', newline='') as updated_csv_file:
+        with open(updated_file_path, mode='w', newline='', encoding='utf-8') as updated_csv_file:
             csv_writer = csv.writer(updated_csv_file)
             csv_writer.writerows(updated_rows)
 
@@ -118,5 +121,8 @@ def upload_csv():
     except Exception as e:
         return jsonify({"error": f"An error occurred while processing the file: {str(e)}"}), 500
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use the PORT environment variable for deployment compatibility
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
