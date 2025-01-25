@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: acn-micromarket-finder
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn -w 4 -b 0.0.0.0:8000 app:app

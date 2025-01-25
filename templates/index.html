@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Micromarket Finder</title>
+    <title>ACN Micromarket Finder</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <style>
         /* General Styling */
@@ -11,189 +11,167 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f7f6; /* Light gray background */
-            color: #333; /* Dark text for readability */
+            background-color: #e8f0fe; /* Light blue background */
+            color: #2c3e50; /* Dark slate for text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Wrapper */
+        .wrapper {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
         }
 
         /* Header Section */
         .header {
-            background-color: #ffffff; /* White background */
-            color: #1abc9c; /* Green for a modern feel */
-            text-align: center;
-            padding: 1.5rem 0;
             font-family: 'Orbitron', sans-serif;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #06423a; /* Bright blue for header */
+            margin-bottom: 1.5rem;
         }
 
         .header h1 {
+            font-size: 2rem;
             margin: 0;
-            font-size: 2.5rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        /* Content Wrapper */
-        .content {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            font-family: 'Orbitron', sans-serif;
-            color: #1abc9c;
-            text-align: center;
-            margin-bottom: 1.5rem;
         }
 
         /* Form Styling */
         form {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1rem;
         }
 
         label {
             font-size: 1rem;
-            color: #555555;
+            color: #2c3e50;
             font-weight: 500;
+            text-align: left;
         }
 
-        input[type="text"], input[type="file"] {
+        input[type="text"] {
             width: 100%;
-            padding: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background: #f7f7f7;
+            padding: 0.9rem;
+            border: 1px solid #ddd;
+            border-radius: 12px;
             font-size: 1rem;
-            color: #333;
-            outline: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: #f9f9f9;
+            color: #2c3e50;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input[type="text"]:focus, input[type="file"]:focus {
-            border-color: #1abc9c; /* Green glow on focus */
-            box-shadow: 0 0 5px rgba(26, 188, 156, 0.7);
+        input[type="text"]:focus {
+            border-color: #06423a;
+            box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
         }
 
         button {
-            background-color: #1abc9c; /* Green background */
-            color: #ffffff;
-            padding: 1rem;
+            background-color: #06423a;
+            color: #fff;
             border: none;
-            border-radius: 8px;
+            padding: 0.9rem;
+            border-radius: 12px;
             font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
         button:hover {
-            background-color: #16a085; /* Darker green when hovered */
-        }
-
-        /* Alert Styling */
-        .alert {
-            font-size: 0.95rem;
-            background: #ffffff;
-            color: #888888;
-            padding: 1rem;
-            border: 1px dashed #ccc;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            background-color:rgb(3, 29, 25);
         }
 
         /* Result Section */
         #micromarket-result {
-            margin-top: 1rem;
-            font-size: 1.2rem;
-            color: #333;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: #34495e;
         }
 
-        /* Footer Section */
+        #micromarket-result p {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        /* Footer */
         .footer {
-            text-align: center;
-            padding: 1rem 0;
-            color: #888888;
+            margin-top: 2rem;
             font-size: 0.9rem;
-            border-top: 1px solid #ddd;
+            color: #a48348;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1>Micromarket Finder</h1>
-    </div>
+    <div class="wrapper">
+        <!-- Header -->
+        <div class="header">
+            <h1>ACN Micromarket Finder</h1>
+        </div>
 
-    <!-- Content Section -->
-    <div class="content">
         <!-- Manual Coordinate Input Form -->
-        <h1>Find Micromarket by Coordinates</h1>
         <form id="manual-form">
-            <label for="latitude">Latitude:</label>
-            <input type="text" id="latitude" name="latitude" placeholder="e.g., 12.9716">
-            
-            <label for="longitude">Longitude:</label>
-            <input type="text" id="longitude" name="longitude" placeholder="e.g., 77.5946">
-            
+            <label for="coordinates">Enter Coordinates:</label>
+            <input type="text" id="coordinates" name="coordinates" placeholder="e.g., 12.905143242821143, 77.65100340903349">
             <button type="submit">Find Micromarket</button>
         </form>
+
+        <!-- Result Section -->
         <div id="micromarket-result"></div>
 
-        <!-- CSV Upload Section -->
-        <h1>Upload CSV File</h1>
-        <p class="alert">Your CSV file must have three columns: <strong>Latitude</strong>, <strong>Longitude</strong>, and <strong>OtherData</strong>.</p>
-        <form action="/upload_csv" method="POST" enctype="multipart/form-data">
-            <label for="file">Upload CSV:</label>
-            <input type="file" id="file" name="file" accept=".csv">
-            <button type="submit">Upload CSV</button>
-        </form>
-    </div>
-
-    <div class="footer">
-        <p>&copy; 2024 TruEstate | All Rights Reserved</p>
+        <!-- Footer -->
+        <div class="footer">
+            &copy; 2025 ACN | All Rights Reserved
+        </div>
     </div>
 
     <script>
-        // Handle manual form submission
-        document.getElementById("manual-form").addEventListener("submit", function(e) {
+        // Handle form submission
+        document.getElementById("manual-form").addEventListener("submit", function (e) {
             e.preventDefault();
-            
-            const latitude = document.getElementById("latitude").value;
-            const longitude = document.getElementById("longitude").value;
 
-            if (isNaN(latitude) || isNaN(longitude)) {
-                alert("Please enter valid latitude and longitude.");
+            const coordinates = document.getElementById("coordinates").value.trim();
+            const [latitude, longitude] = coordinates.split(",").map(coord => coord.trim());
+
+            // Validate the input
+            if (!latitude || !longitude || isNaN(latitude) || isNaN(longitude)) {
+                document.getElementById("micromarket-result").innerHTML =
+                    `<p style="color: red;">Invalid input! Please enter valid coordinates in the format: <strong>latitude, longitude</strong>.</p>`;
                 return;
             }
 
+            // Simulate API request
             fetch('/find_micromarket', {
                 method: 'POST',
                 body: new URLSearchParams({
-                    'latitude': latitude,
-                    'longitude': longitude
+                    latitude: latitude,
+                    longitude: longitude
                 }),
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.micromarket_name) {
-                    document.getElementById("micromarket-result").innerHTML = 
-                        `<p>Micromarket Name: ${data.micromarket_name}</p>`;
-                } else {
-                    document.getElementById("micromarket-result").innerHTML = 
-                        `<p>Error: ${data.error}</p>`;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.micromarket_name) {
+                        document.getElementById("micromarket-result").innerHTML =
+                            `<p>Micromarket Name: <span style="color: #007bff;">${data.micromarket_name}</span></p>`;
+                    } else {
+                        document.getElementById("micromarket-result").innerHTML =
+                            `<p style="color: red;">Error: ${data.error}</p>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("micromarket-result").innerHTML =
+                        `<p style="color: red;">An unexpected error occurred. Please try again later.</p>`;
+                    console.error('Error:', error);
+                });
         });
     </script>
 </body>
