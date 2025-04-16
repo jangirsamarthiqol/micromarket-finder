@@ -4,149 +4,314 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACN Micromarket Finder</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* General Styling */
-        body {
-            font-family: 'Inter', sans-serif;
+        :root {
+            --primary: #0f766e;
+            --primary-dark: #115e59;
+            --primary-light: #5eead4;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --error: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            background-color: #e8f0fe; /* Light blue background */
-            color: #2c3e50; /* Dark slate for text */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        /* Wrapper */
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+            color: var(--text);
+        }
+
         .wrapper {
             width: 100%;
-            max-width: 500px;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            text-align: center;
+            max-width: 640px;
+            background: var(--surface);
+            border-radius: 32px;
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -2px rgba(0, 0, 0, 0.1),
+                0 20px 25px -5px rgba(15, 23, 42, 0.1);
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Header Section */
         .header {
-            font-family: 'Orbitron', sans-serif;
-            color: #06423a; /* Bright blue for header */
-            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><rect width="1" height="1" fill="rgba(255,255,255,0.05)"/></svg>');
+            opacity: 0.3;
         }
 
         .header h1 {
-            font-size: 2rem;
-            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+            position: relative;
         }
 
-        /* Form Styling */
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.125rem;
+            position: relative;
+        }
+
+        .content {
+            padding: 2.5rem;
+        }
+
+        .search-container {
+            background: var(--background);
+            padding: 2rem;
+            border-radius: 24px;
+            margin-top: -4rem;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
         }
 
         label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text);
             font-size: 1rem;
-            color: #2c3e50;
-            font-weight: 500;
-            text-align: left;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 0.9rem;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            font-size: 1rem;
-            background: #f9f9f9;
-            color: #2c3e50;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            padding: 1.25rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-family: inherit;
+            background: var(--surface);
+            transition: all 0.3s ease;
         }
 
         input[type="text"]:focus {
-            border-color: #06423a;
-            box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.2);
         }
 
         button {
-            background-color: #06423a;
-            color: #fff;
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--primary);
+            color: white;
             border: none;
-            padding: 0.9rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            border-radius: 16px;
+            font-size: 1.125rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
         }
 
         button:hover {
-            background-color:rgb(3, 29, 25);
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
         }
 
-        /* Result Section */
         #micromarket-result {
-            margin-top: 1.5rem;
-            font-size: 1.1rem;
-            color: #34495e;
-        }
-
-        #micromarket-result p {
-            margin: 0;
-            font-weight: bold;
-        }
-
-        /* Footer */
-        .footer {
             margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #a48348;
+            padding: 2rem;
+            border-radius: 20px;
+            background: var(--background);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+        }
+
+        .result-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+        }
+
+        .success .result-icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .error .result-icon {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .result-text {
+            flex: 1;
+        }
+
+        .result-text h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .footer {
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .wrapper {
+                border-radius: 24px;
+            }
+
+            .header {
+                padding: 2rem 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 1.5rem;
+            }
+
+            .search-container {
+                padding: 1.5rem;
+                margin-top: -3rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="wrapper">
-        <!-- Header -->
         <div class="header">
             <h1>ACN Micromarket Finder</h1>
+            <p>Discover your location's micromarket instantly</p>
         </div>
 
-        <!-- Manual Coordinate Input Form -->
-        <form id="manual-form">
-            <label for="coordinates">Enter Coordinates:</label>
-            <input type="text" id="coordinates" name="coordinates" placeholder="e.g., 12.905143242821143, 77.65100340903349">
-            <button type="submit">Find Micromarket</button>
-        </form>
+        <div class="content">
+            <div class="search-container">
+                <form id="manual-form">
+                    <div class="input-group">
+                        <label for="coordinates">Enter Location Coordinates</label>
+                        <input 
+                            type="text" 
+                            id="coordinates" 
+                            name="coordinates" 
+                            placeholder="Latitude, Longitude (e.g., 12.905143, 77.651003)"
+                            autocomplete="off"
+                        >
+                    </div>
+                    <button type="submit">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Find Micromarket
+                    </button>
+                </form>
+            </div>
 
-        <!-- Result Section -->
-        <div id="micromarket-result"></div>
+            <div id="micromarket-result" style="display: none;"></div>
+        </div>
 
-        <!-- Footer -->
         <div class="footer">
-            &copy; 2025 ACN | All Rights Reserved
+            <p>&copy; 2025 ACN Micromarket Finder. All rights reserved.</p>
         </div>
     </div>
 
     <script>
-        // Handle form submission
         document.getElementById("manual-form").addEventListener("submit", function (e) {
             e.preventDefault();
 
             const coordinates = document.getElementById("coordinates").value.trim();
             const [latitude, longitude] = coordinates.split(",").map(coord => coord.trim());
+            const resultDiv = document.getElementById("micromarket-result");
 
-            // Validate the input
             if (!latitude || !longitude || isNaN(latitude) || isNaN(longitude)) {
-                document.getElementById("micromarket-result").innerHTML =
-                    `<p style="color: red;">Invalid input! Please enter valid coordinates in the format: <strong>latitude, longitude</strong>.</p>`;
+                resultDiv.style.display = "block";
+                resultDiv.innerHTML = `
+                    <div class="result-card error">
+                        <div class="result-icon">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="result-text">
+                            <h3>Invalid Coordinates</h3>
+                            <p>Please enter valid coordinates in the format: latitude, longitude</p>
+                        </div>
+                    </div>
+                `;
                 return;
             }
 
-            // Simulate API request
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = `
+                <div class="result-card">
+                    <div class="result-icon" style="background: rgba(15, 118, 110, 0.1); color: var(--primary);">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
+                            <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="animate-spin"/>
+                        </svg>
+                    </div>
+                    <div class="result-text">
+                        <h3>Searching...</h3>
+                        <p>Looking up your location's micromarket</p>
+                    </div>
+                </div>
+            `;
+
             fetch('/find_micromarket', {
                 method: 'POST',
                 body: new URLSearchParams({
@@ -160,16 +325,49 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.micromarket_name) {
-                        document.getElementById("micromarket-result").innerHTML =
-                            `<p>Micromarket Name: <span style="color: #007bff;">${data.micromarket_name}</span></p>`;
+                        resultDiv.innerHTML = `
+                            <div class="result-card success">
+                                <div class="result-icon">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="result-text">
+                                    <h3>Location Found!</h3>
+                                    <p>${data.micromarket_name}</p>
+                                </div>
+                            </div>
+                        `;
                     } else {
-                        document.getElementById("micromarket-result").innerHTML =
-                            `<p style="color: red;">Error: ${data.error}</p>`;
+                        resultDiv.innerHTML = `
+                            <div class="result-card error">
+                                <div class="result-icon">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="result-text">
+                                    <h3>Error</h3>
+                                    <p>${data.error}</p>
+                                </div>
+                            </div>
+                        `;
                     }
                 })
                 .catch(error => {
-                    document.getElementById("micromarket-result").innerHTML =
-                        `<p style="color: red;">An unexpected error occurred. Please try again later.</p>`;
+                    resultDiv.innerHTML = `
+                        <div class="result-card error">
+                            <div class="result-icon">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="result-text">
+                                <h3>System Error</h3>
+                                <p>An unexpected error occurred. Please try again later.</p>
+                            </div>
+                        </div>
+                    `;
                     console.error('Error:', error);
                 });
         });
