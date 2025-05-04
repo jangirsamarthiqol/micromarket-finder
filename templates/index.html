@@ -196,6 +196,35 @@
             margin-bottom: 0.25rem;
         }
 
+        .result-text p {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 0.75rem;
+        }
+
+        .result-details {
+            margin-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            width: 100px;
+            color: var(--text-light);
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
         .footer {
             padding: 2rem;
             text-align: center;
@@ -324,21 +353,7 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.micromarket_name) {
-                        resultDiv.innerHTML = `
-                            <div class="result-card success">
-                                <div class="result-icon">
-                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
-                                <div class="result-text">
-                                    <h3>Location Found!</h3>
-                                    <p>${data.micromarket_name}</p>
-                                </div>
-                            </div>
-                        `;
-                    } else {
+                    if (data.error) {
                         resultDiv.innerHTML = `
                             <div class="result-card error">
                                 <div class="result-icon">
@@ -349,6 +364,34 @@
                                 <div class="result-text">
                                     <h3>Error</h3>
                                     <p>${data.error}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Get the name to display - prefer formatted_name, fall back to micromarket_name
+                        const displayName = data.formatted_name || data.micromarket_name;
+                        
+                        // Don't display "Unknown, No matching micromarket"
+                        const finalDisplayName = displayName.includes("Unknown") && displayName.includes("No matching micromarket") 
+                            ? "Location not found in any micromarket" 
+                            : displayName;
+                        
+                        resultDiv.innerHTML = `
+                            <div class="result-card success">
+                                <div class="result-icon">
+                                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="result-text">
+                                    <h3>Location Found!</h3>
+                                    <p>${finalDisplayName}</p>
+                                    <div class="result-details">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Coordinates:</div>
+                                            <div class="detail-value">${data.latitude}, ${data.longitude}</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         `;
