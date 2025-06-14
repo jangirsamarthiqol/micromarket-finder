@@ -481,13 +481,15 @@
                         </div>
                     `;
                 } else {
-                    const displayName = data.formatted_name || data.micromarket_name;
-                    const finalName = displayName.includes("Unknown")
+                    const micromarket = data.micromarket_name || "Unknown";
+                    const zone = data.zone_name || "Unknown";
+                    const displayName = micromarket;
+                    const finalName = micromarket === "Unknown"
                         ? "Location not found in any micromarket" 
-                        : displayName;
+                        : micromarket;
 
-                    const status = displayName.includes("Unknown") ? "warning" : "success";
-                    const icon = displayName.includes("Unknown") 
+                    const status = micromarket === "Unknown" ? "warning" : "success";
+                    const icon = micromarket === "Unknown" 
                         ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -504,10 +506,10 @@
                                 ${icon}
                             </div>
                             <div class="result-text">
-                                <h3>${displayName.includes("Unknown") ? "Location Not Found" : "Location Found!"}</h3>
+                                <h3>${micromarket === "Unknown" ? "Location Not Found" : "Location Found!"}</h3>
                                 <p>
                                     ${finalName}
-                                    ${!displayName.includes("Unknown") ? `
+                                    ${micromarket !== "Unknown" ? `
                                         <button class="copy-button" onclick="copyToClipboard('${finalName}')" title="Copy to clipboard">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -523,7 +525,7 @@
                                     </div>
                                     <div class="detail-item">
                                         <div class="detail-label">Zone:</div>
-                                        <div class="detail-value">${data.zone}</div>
+                                        <div class="detail-value">${zone}</div>
                                     </div>
                                 </div>
                             </div>

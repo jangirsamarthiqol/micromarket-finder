@@ -14,7 +14,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # GeoJSON File Path
-DATA_FILE_PATH = os.path.join(os.path.dirname(__file__), 'Data', 'submicromarket_zone_micromarket_190525.geojson')
+DATA_FILE_PATH = os.path.join(os.path.dirname(__file__), 'Data', 'new.geojson')
 
 # Load GeoJSON File
 try:
@@ -118,49 +118,38 @@ def point_in_bounding_box(lon, lat, bbox):
         return False
 
 def get_micromarket_info(lat, lon):
-    """Determine the micromarket and area (Zone) for given coordinates."""
+    """Determine the micromarket and zone for given coordinates."""
     try:
         point = Point(lon, lat)  # Important: longitude first, latitude second
-        
         print(f"Searching for point: ({lat}, {lon})")
-        
         # First try the GeoJSON polygon approach
         for i, feature in enumerate(micromarket_data.get('features', [])):
             try:
                 properties = feature.get('properties', {})
-                area_name = properties.get('Name', '')
                 micromarket_name = properties.get('Micromarket', '')
                 zone_name = properties.get('Zone', '')
-                
-                if not area_name and not micromarket_name:
+                if not micromarket_name:
                     continue
-                    
                 geometry = feature.get('geometry', {})
                 if not geometry:
                     continue
-                    
                 if point_in_polygon_check(point, geometry):
-                    area = f"{zone_name} Bangalore" if zone_name else "Not Found"
-                    print(f"MATCH FOUND: {area_name}, {micromarket_name}, {area}")
-                    return area_name, micromarket_name, area
-                    
+                    print(f"MATCH FOUND: Micromarket: {micromarket_name}, Zone: {zone_name}")
+                    return micromarket_name, zone_name
             except Exception as e:
                 print(f"Error processing feature {i+1}: {e}")
                 continue
-        
         # If polygon check fails, try the bounding box approach for known areas
         print("No polygon match found, trying bounding box approach...")
         for area_name, bbox in KNOWN_AREAS.items():
             if point_in_bounding_box(lon, lat, bbox):
                 print(f"BOUNDING BOX MATCH: {area_name}")
-                return area_name, area_name, f"{area_name} Bangalore"
-        
+                return area_name, ""
         print("No match found in any polygon or bounding box")
-        return "Unknown", "Not Found", "Not Found"
-        
+        return "Unknown", ""
     except Exception as e:
         print(f"Error in get_micromarket_info: {e}")
-        return "Unknown", "Not Found", "Not Found"
+        return "Unknown", ""
 
 @app.route('/')
 def home():
@@ -171,18 +160,12 @@ def find_micromarket():
     try:
         lat = float(request.form.get('latitude', ''))
         lon = float(request.form.get('longitude', ''))
-        area, micro, zone = get_micromarket_info(lat, lon)
-        if area and area != "Unknown" and area != micro:
-            formatted = f"{area}, {micro}"
-        else:
-            formatted = micro or "Not Found"
+        micromarket_name, zone_name = get_micromarket_info(lat, lon)
         return jsonify({
             "latitude": lat,
             "longitude": lon,
-            "area_name": area,
-            "micromarket_name": micro,
-            "formatted_name": formatted,
-            "zone": zone
+            "micromarket_name": micromarket_name,
+            "zone_name": zone_name
         })
     except (ValueError, TypeError) as e:
         return jsonify({"error": f"Invalid coordinates: {e}"}), 400
@@ -202,21 +185,17 @@ def upload_csv():
     with open(path, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         header = next(reader, [])
-        updated.append(header + ["Location", "Zone"])
+        updated.append(header + ["Micromarket", "Zone"])
         for row in reader:
             if len(row) < 3:
                 updated.append(row + ["Invalid Row", ""])
                 continue
             try:
                 lat, lon = float(row[1]), float(row[2])
-                area, micro, zone = get_micromarket_info(lat, lon)
-                if area and area != "Unknown" and area != micro:
-                    loc = f"{area}, {micro}"
-                else:
-                    loc = micro or "Not Found"
+                micromarket_name, zone_name = get_micromarket_info(lat, lon)
             except ValueError:
-                loc, zone = "Invalid Coordinates", "Unknown"
-            updated.append(row + [loc, zone])
+                micromarket_name, zone_name = "Invalid Coordinates", ""
+            updated.append(row + [micromarket_name, zone_name])
 
     out_name = f"updated_{filename}"
     out_path = os.path.join(app.config['UPLOAD_FOLDER'], out_name)
